@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hệ thống học liệu tương tác</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;width:100%;font-family:sans-serif;}
+.app{width:100%;min-height:100vh;background:#f0f4f8;}
+.hdr{background:#1565C0;color:#fff;padding:14px 20px;}
+.hdr h2{font-size:12px;opacity:.75;margin-bottom:3px;}
+.hdr h1{font-size:18px;font-weight:500;}
+.back-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-bottom:8px;padding:5px 12px;border-radius:20px;}
+.screen{display:none;}.screen.active{display:block;}
+.pad{padding:14px;max-width:860px;margin:0 auto;}
+.blk-btn{background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.blk-btn.full{width:100%;justify-content:center;margin-top:8px;}
+.green-btn{background:#27500A;color:#fff;border:none;border-radius:8px;padding:11px 16px;font-size:13px;font-weight:500;cursor:pointer;width:100%;justify-content:center;display:flex;align-items:center;gap:6px;margin-top:8px;}
+.play-btn{background:#1565C0;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.sm-btn{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.del-btn{background:#E24B4A;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;}
+.outline-btn{background:none;border:1.5px solid #1a1a1a;color:#1a1a1a;border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.outline-btn:hover{background:#1a1a1a;color:#fff;}
+.card{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.card-title{font-size:15px;font-weight:500;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.lbl{font-size:11px;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+input[type=text]{width:100%;border:none;border-radius:7px;padding:10px 12px;font-size:13px;color:#e8e8e8;background:#1a1a1a;margin-bottom:8px;outline:none;}
+input[type=text]::placeholder{color:#666;}
+input[type=text]:focus{background:#222;outline:2px solid #378ADD;outline-offset:1px;}
+textarea{width:100%;border:none;border-radius:7px;padding:10px 12px;font-size:13px;color:#e8e8e8;background:#1a1a1a;margin-bottom:8px;outline:none;resize:vertical;min-height:64px;}
+textarea::placeholder{color:#666;}
+.mon-card{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mon-card:hover{border-color:#1565C0;}
+.mon-ic{width:36px;height:36px;border-radius:8px;background:#1565C0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;}
+.mon-name{font-size:13px;font-weight:500;color:#111;}
+.mon-sub{font-size:11px;color:#888;margin-top:1px;}
+.bai-item{background:#fff;border-radius:8px;border:0.5px solid #ddd;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.bai-num{width:26px;height:26px;border-radius:50%;background:#1565C0;color:#fff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bai-name{font-size:13px;font-weight:500;color:#111;flex:1;}
+.q-editor-block{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.q-editor-title{font-size:13px;font-weight:500;color:#111;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.opt-row{display:flex;gap:7px;align-items:center;margin-bottom:7px;}
+.opt-row input{margin-bottom:0;flex:1;}
+.chk-toggle{width:30px;height:30px;border-radius:6px;border:2px solid #1D9E75;background:#fff;cursor:pointer;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#1D9E75;}
+.chk-toggle.on{background:#1D9E75;color:#fff;}
+.del-opt-btn{width:30px;height:30px;border-radius:6px;border:2px solid #E24B4A;background:#fff;cursor:pointer;font-size:14px;color:#E24B4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.del-opt-btn:hover{background:#E24B4A;color:#fff;}
+.del-q-btn{background:none;border:none;color:#E24B4A;cursor:pointer;font-size:17px;padding:0;}
+.q-block{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.q-num-badge{font-size:11px;background:#1565C0;color:#fff;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px;}
+.q-text{font-size:14px;font-weight:500;color:#111;margin-bottom:4px;line-height:1.5;}
+.multi-badge{font-size:11px;background:#FAEEDA;color:#633806;padding:3px 10px;border-radius:6px;margin-bottom:10px;display:inline-block;}
+.opt{padding:10px 13px;border-radius:8px;border:1px solid #ddd;font-size:13px;color:#111;margin-bottom:7px;cursor:pointer;display:flex;align-items:center;gap:9px;}
+.opt:hover{border-color:#1565C0;}
+.opt.selected{border-color:#1565C0;background:#E6F1FB;color:#0C447C;}
+.opt.correct-ans{background:#E1F5EE;border-color:#1D9E75;color:#085041;}
+.opt.wrong-ans{background:#FCEBEB;border-color:#E24B4A;color:#791F1F;}
+.chkbox{width:17px;height:17px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.opt.selected .chkbox{border-color:#1565C0;background:#1565C0;color:#fff;}
+.opt.correct-ans .chkbox{border-color:#1D9E75;background:#1D9E75;color:#fff;}
+.opt.wrong-ans .chkbox{border-color:#E24B4A;background:#E24B4A;color:#fff;}
+.result-summary{background:#1565C0;border-radius:10px;padding:18px;margin-bottom:12px;text-align:center;}
+.score-big{font-size:34px;font-weight:500;color:#fff;}
+.score-lbl{font-size:13px;color:rgba(255,255,255,.75);margin-top:2px;}
+.tag-ok{font-size:11px;background:#E1F5EE;color:#085041;padding:2px 8px;border-radius:8px;}
+.tag-err{font-size:11px;background:#FCEBEB;color:#791F1F;padding:2px 8px;border-radius:8px;}
+.hint-line{font-size:12px;color:#0F6E56;margin-top:8px;padding-top:8px;border-top:0.5px solid #eee;}
+.empty{font-size:13px;color:#aaa;text-align:center;padding:20px 0;}
+.loading{font-size:13px;color:#888;text-align:center;padding:20px 0;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="toast" id="toast"></div>
+
+<!-- TRANG CHỦ -->
+<div id="s-home" class="screen active">
+  <div class="hdr"><h2>Hệ thống học liệu</h2><h1>Trang chủ</h1></div>
+  <div class="pad">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-school"></i> Tạo môn học</div>
+      <div class="lbl">Tên môn học</div>
+      <input type="text" id="inp-mon" placeholder="VD: Nhập môn lập trình" />
+      <button class="blk-btn full" onclick="addMon()"><i class="ti ti-plus"></i> Thêm môn học</button>
+    </div>
+    <div id="mon-list"><div class="loading">Đang tải dữ liệu...</div></div>
+  </div>
+</div>
+
+<!-- DANH SÁCH BÀI -->
+<div id="s-bai" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-home')"><i class="ti ti-arrow-left"></i> Danh sách môn</button>
+    <h1 id="bai-hdr"></h1>
+  </div>
+  <div class="pad">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-file-plus"></i> Tạo bài học</div>
+      <div class="lbl">Tên bài học</div>
+      <input type="text" id="inp-bai" placeholder="VD: Bài 1: Giới thiệu" />
+      <button class="blk-btn full" onclick="addBai()"><i class="ti ti-plus"></i> Thêm bài học</button>
+    </div>
+    <div id="bai-list"></div>
+  </div>
+</div>
+
+<!-- SOẠN CÂU HỎI -->
+<div id="s-edit" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Danh sách bài</button>
+    <h1 id="edit-hdr"></h1>
+  </div>
+  <div class="pad">
+    <div id="q-editor"></div>
+    <button class="blk-btn full" onclick="addQ()" style="margin-bottom:8px;"><i class="ti ti-plus"></i> Thêm câu hỏi</button>
+    <button class="green-btn" onclick="saveBai()"><i class="ti ti-device-floppy"></i> Lưu bài học lên Firebase</button>
+  </div>
+</div>
+
+<!-- LÀM BÀI -->
+<div id="s-quiz" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Thoát bài</button>
+    <h1 id="quiz-hdr"></h1>
+  </div>
+  <div class="pad">
+    <div id="quiz-body"></div>
+    <button class="green-btn" onclick="submitQuiz()"><i class="ti ti-send"></i> Nộp bài</button>
+  </div>
+</div>
+
+<!-- KẾT QUẢ -->
+<div id="s-result" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Về danh sách bài</button>
+    <h1>Kết quả bài làm</h1>
+  </div>
+  <div class="pad">
+    <div class="result-summary">
+      <div class="score-big" id="res-score">0/0</div>
+      <div class="score-lbl">câu đúng</div>
+    </div>
+    <div id="res-body"></div>
+    <button class="blk-btn full" style="margin-top:4px;" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Về danh sách bài</button>
+  </div>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, getDocs, updateDoc, deleteDoc, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDU0g8Fyb7XwtCfOE1EzJez-lmL6NBEK0",
+  authDomain: "hoc-lieu-6ab83.firebaseapp.com",
+  projectId: "hoc-lieu-6ab83",
+  storageBucket: "hoc-lieu-6ab83.firebasestorage.app",
+  messagingSenderId: "383851597256",
+  appId: "1:383851597256:web:fbccb958eba5399d21c4fd"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let curMonId=null, curBaiId=null, curBaiQs=[], ans={};
+
+function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+window.goTo=goTo;
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===== MÔN HỌC =====
+onSnapshot(query(collection(db,'monhoc'),orderBy('createdAt')), snap=>{
+  const el=document.getElementById('mon-list');
+  if(snap.empty){el.innerHTML='<p class="empty">Chưa có môn học nào. Hãy tạo môn học đầu tiên!</p>';return;}
+  el.innerHTML=snap.docs.map(d=>{
+    const name=d.data().name||'';
+    return `<div class="mon-card">
+      <div class="mon-ic" onclick="openMon('${d.id}','${name.replace(/'/g,"\\'")}')"><i class="ti ti-book"></i></div>
+      <div style="flex:1;cursor:pointer;" onclick="openMon('${d.id}','${name.replace(/'/g,"\\'")}')">
+        <div class="mon-name">${name}</div>
+        <div class="mon-sub">Bấm để xem bài học</div>
+      </div>
+      <button class="del-btn" onclick="delMon('${d.id}')"><i class="ti ti-trash"></i></button>
+    </div>`;
+  }).join('');
+});
+
+window.addMon=async function(){
+  const v=document.getElementById('inp-mon').value.trim();
+  if(!v)return;
+  await addDoc(collection(db,'monhoc'),{name:v,createdAt:Date.now()});
+  document.getElementById('inp-mon').value='';
+  showToast('Đã thêm môn học!');
+};
+
+window.delMon=async function(id){
+  if(!confirm('Xóa môn học này?'))return;
+  await deleteDoc(doc(db,'monhoc',id));
+  showToast('Đã xóa!');
+};
+
+window.openMon=function(id,name){
+  curMonId=id;
+  document.getElementById('bai-hdr').textContent=name;
+  loadBais(); goTo('s-bai');
+};
+
+// ===== BÀI HỌC =====
+function loadBais(){
+  const el=document.getElementById('bai-list');
+  el.innerHTML='<div class="loading">Đang tải...</div>';
+  onSnapshot(query(collection(db,'monhoc',curMonId,'bai'),orderBy('createdAt')), snap=>{
+    if(snap.empty){el.innerHTML='<p class="empty">Chưa có bài học nào.</p>';return;}
+    el.innerHTML=snap.docs.map((d,i)=>{
+      const name=d.data().name||'';
+      return `<div class="bai-item">
+        <div class="bai-num">${i+1}</div>
+        <div class="bai-name">${name}</div>
+        <button class="sm-btn" style="margin-right:6px;" onclick="openEdit('${d.id}','${name.replace(/'/g,"\\'")}')"><i class="ti ti-edit"></i> Sửa</button>
+        <button class="play-btn" onclick="openQuiz('${d.id}','${name.replace(/'/g,"\\'")}')"><i class="ti ti-player-play"></i> Làm bài</button>
+      </div>`;
+    }).join('');
+  });
+}
+
+window.addBai=async function(){
+  const v=document.getElementById('inp-bai').value.trim();
+  if(!v||!curMonId)return;
+  await addDoc(collection(db,'monhoc',curMonId,'bai'),{name:v,qs:[],createdAt:Date.now()});
+  document.getElementById('inp-bai').value='';
+  showToast('Đã thêm bài học!');
+};
+
+// ===== SOẠN CÂU HỎI =====
+window.openEdit=async function(bid,bname){
+  curBaiId=bid;
+  document.getElementById('edit-hdr').textContent='Soạn: '+bname;
+  const baiDoc=await getDocs(collection(db,'monhoc',curMonId,'bai'));
+  const found=baiDoc.docs.find(d=>d.id===bid);
+  curBaiQs=found?JSON.parse(JSON.stringify(found.data().qs||[])):[];
+  renderEditor(); goTo('s-edit');
+};
+
+function renderEditor(){
+  const el=document.getElementById('q-editor');
+  if(!curBaiQs.length){el.innerHTML='<p class="empty" style="margin-bottom:10px;">Chưa có câu hỏi nào. Bấm "Thêm câu hỏi" để bắt đầu.</p>';return;}
+  el.innerHTML=curBaiQs.map((q,qi)=>`
+    <div class="q-editor-block">
+      <div class="q-editor-title">
+        <span>Câu hỏi ${qi+1}</span>
+        <button class="del-q-btn" onclick="delQ(${qi})"><i class="ti ti-trash"></i></button>
+      </div>
+      <div class="lbl">Nội dung câu hỏi</div>
+      <textarea placeholder="Nhập câu hỏi..." oninput="curBaiQs[${qi}].text=this.value">${q.text||''}</textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <input type="checkbox" id="multi-${qi}" ${q.multi?'checked':''} onchange="toggleMulti(${qi},this.checked)" style="width:auto;margin:0;accent-color:#1a1a1a;"/>
+        <label for="multi-${qi}" style="font-size:12px;color:#555;cursor:pointer;">Cho phép chọn nhiều đáp án đúng</label>
+      </div>
+      <div class="lbl">Các đáp án <span style="color:#1D9E75;">(bấm ✓ để đánh dấu đúng)</span></div>
+      ${(q.opts||[]).map((o,oi)=>{
+        const isC=q.multi?(q.corrects||[]).includes(oi):(q.correct===oi);
+        return `<div class="opt-row">
+          <input type="text" value="${o||''}" placeholder="Đáp án ${oi+1}..." oninput="curBaiQs[${qi}].opts[${oi}]=this.value"/>
+          <button class="chk-toggle${isC?' on':''}" onclick="setCorrect(${qi},${oi})">✓</button>
+          <button class="del-opt-btn" onclick="delOpt(${qi},${oi})"><i class="ti ti-x"></i></button>
+        </div>`;
+      }).join('')}
+      <button class="outline-btn" style="margin-top:4px;" onclick="addOpt(${qi})"><i class="ti ti-plus"></i> Thêm đáp án</button>
+    </div>`).join('');
+}
+
+window.addQ=function(){curBaiQs.push({text:'',opts:['',''],correct:0,corrects:[0],multi:false});renderEditor();};
+window.delQ=function(qi){curBaiQs.splice(qi,1);renderEditor();};
+window.addOpt=function(qi){curBaiQs[qi].opts.push('');renderEditor();};
+window.delOpt=function(qi,oi){if(curBaiQs[qi].opts.length<=2)return;curBaiQs[qi].opts.splice(oi,1);renderEditor();};
+window.toggleMulti=function(qi,val){curBaiQs[qi].multi=val;renderEditor();};
+window.setCorrect=function(qi,oi){
+  const q=curBaiQs[qi];
+  if(q.multi){q.corrects=q.corrects||[];const idx=q.corrects.indexOf(oi);if(idx>=0)q.corrects.splice(idx,1);else q.corrects.push(oi);}
+  else{q.correct=oi;}
+  renderEditor();
+};
+
+window.saveBai=async function(){
+  await updateDoc(doc(db,'monhoc',curMonId,'bai',curBaiId),{qs:curBaiQs});
+  showToast('Đã lưu lên Firebase!');
+  goTo('s-bai');
+};
+
+// ===== LÀM BÀI =====
+window.openQuiz=async function(bid,bname){
+  curBaiId=bid; ans={};
+  document.getElementById('quiz-hdr').textContent=bname;
+  const baiDoc=await getDocs(collection(db,'monhoc',curMonId,'bai'));
+  const found=baiDoc.docs.find(d=>d.id===bid);
+  curBaiQs=found?JSON.parse(JSON.stringify(found.data().qs||[])):[];
+  renderQuiz(); goTo('s-quiz');
+};
+
+function renderQuiz(){
+  const el=document.getElementById('quiz-body');
+  if(!curBaiQs.length){el.innerHTML='<p class="empty">Bài này chưa có câu hỏi nào.</p>';return;}
+  el.innerHTML=curBaiQs.map((q,qi)=>{
+    const sel=ans[qi]||[];
+    const hint=q.multi?`<span class="multi-badge"><i class="ti ti-info-circle"></i> Chọn ${(q.corrects||[]).length} đáp án đúng</span><br/>`:'';
+    return `<div class="q-block">
+      <span class="q-num-badge">Câu ${qi+1}</span>
+      <div class="q-text">${q.text}</div>
+      ${hint}
+      ${(q.opts||[]).map((o,oi)=>{
+        const isSel=sel.includes(oi);
+        return `<div class="opt${isSel?' selected':''}" onclick="selectAns(${qi},${oi},${!!q.multi})">
+          <div class="chkbox">${isSel?'✓':''}</div><span>${o}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+window.selectAns=function(qi,oi,multi){
+  if(!ans[qi])ans[qi]=[];
+  const arr=ans[qi],idx=arr.indexOf(oi);
+  if(multi){if(idx>=0)arr.splice(idx,1);else arr.push(oi);}
+  else{ans[qi]=[oi];}
+  renderQuiz();
+};
+
+window.submitQuiz=function(){
+  if(!curBaiQs.length){goTo('s-bai');return;}
+  let correct=0;
+  curBaiQs.forEach((q,qi)=>{
+    const ua=ans[qi]||[];
+    if(q.multi){if((q.corrects||[]).slice().sort().join(',')===ua.slice().sort().join(','))correct++;}
+    else{if(ua[0]===q.correct)correct++;}
+  });
+  document.getElementById('res-score').textContent=correct+'/'+curBaiQs.length;
+  document.getElementById('res-body').innerHTML=curBaiQs.map((q,qi)=>{
+    const ua=ans[qi]||[];
+    const isOk=q.multi?((q.corrects||[]).slice().sort().join(',')===ua.slice().sort().join(',')):(ua[0]===q.correct);
+    const cs=q.multi?(q.corrects||[]):[q.correct];
+    return `<div class="q-block">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span class="q-num-badge">Câu ${qi+1}</span>
+        <span class="${isOk?'tag-ok':'tag-err'}">${isOk?'✓ Đúng':'✗ Sai'}</span>
+      </div>
+      <div class="q-text">${q.text}</div>
+      ${(q.opts||[]).map((o,oi)=>{
+        const isCo=cs.includes(oi),isUs=ua.includes(oi);
+        const cls='opt'+(isCo?' correct-ans':(isUs&&!isCo?' wrong-ans':''));
+        return `<div class="${cls}"><div class="chkbox">${isCo?'✓':(isUs?'✗':'')}</div><span>${o}</span></div>`;
+      }).join('')}
+      ${!isOk?'<div class="hint-line">Đáp án đúng được tô màu xanh bên trên</div>':''}
+    </div>`;
+  }).join('');
+  goTo('s-result');
+};
+</script>
+</body>
+</html>
