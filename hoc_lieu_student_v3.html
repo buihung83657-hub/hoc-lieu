@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Học liệu - Học sinh</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;width:100%;font-family:sans-serif;}
+.app{width:100%;min-height:100vh;background:#f0f4f8;}
+.hdr{background:#1565C0;color:#fff;padding:14px 20px;}
+.hdr h2{font-size:12px;opacity:.75;margin-bottom:3px;}
+.hdr h1{font-size:18px;font-weight:500;}
+.back-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-bottom:8px;padding:5px 12px;border-radius:20px;}
+.screen{display:none;}.screen.active{display:block;}
+.pad{padding:14px;max-width:860px;margin:0 auto;}
+
+/* SEARCH */
+.search-wrap{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.search-wrap i{color:#aaa;font-size:18px;flex-shrink:0;}
+.search-wrap input{flex:1;border:none;outline:none;font-size:14px;color:#111;background:transparent;}
+.search-wrap input::placeholder{color:#aaa;}
+
+/* MON / BAI */
+.mon-card{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;}
+.mon-card:hover{border-color:#1565C0;box-shadow:0 2px 8px rgba(21,101,192,.1);}
+.mon-ic{width:38px;height:38px;border-radius:8px;background:#1565C0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;flex-shrink:0;}
+.mon-name{font-size:14px;font-weight:500;color:#111;}
+.mon-sub{font-size:11px;color:#888;margin-top:2px;}
+.bai-item{background:#fff;border-radius:8px;border:0.5px solid #ddd;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.bai-num{width:26px;height:26px;border-radius:50%;background:#1565C0;color:#fff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bai-name{font-size:13px;font-weight:500;color:#111;flex:1;}
+.play-btn{background:#1565C0;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.play-btn:hover{background:#1976D2;}
+
+/* BUTTONS */
+.green-btn{background:#27500A;color:#fff;border:none;border-radius:8px;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;width:100%;justify-content:center;display:flex;align-items:center;gap:6px;margin-top:10px;}
+.green-btn:hover{background:#3B6D11;}
+.blk-btn{background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.blk-btn.full{width:100%;justify-content:center;margin-top:8px;}
+
+/* QUIZ CHUNG */
+.q-block{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.q-num-badge{font-size:11px;background:#1565C0;color:#fff;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:6px;}
+.qtype-badge{font-size:11px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:6px;margin-left:6px;}
+.qtype-badge.mc{background:#E6F1FB;color:#1565C0;}
+.qtype-badge.fill{background:#FEF3E8;color:#E07B2A;}
+.qtype-badge.match{background:#E1F5EE;color:#1D9E75;}
+.qtype-badge.order{background:#F3EEFF;color:#7C3AED;}
+.q-text{font-size:14px;font-weight:500;color:#111;margin-bottom:10px;line-height:1.6;white-space:pre-wrap;}
+.multi-badge{font-size:11px;background:#FAEEDA;color:#633806;padding:3px 10px;border-radius:6px;margin-bottom:10px;display:inline-block;}
+
+/* TRẮC NGHIỆM */
+.opt{padding:10px 13px;border-radius:8px;border:1px solid #ddd;font-size:13px;color:#111;margin-bottom:7px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all .15s;}
+.opt:hover{border-color:#1565C0;background:#f7fafd;}
+.opt.selected{border-color:#1565C0;background:#E6F1FB;color:#0C447C;}
+.opt.correct-ans{background:#E1F5EE;border-color:#1D9E75;color:#085041;}
+.opt.wrong-ans{background:#FCEBEB;border-color:#E24B4A;color:#791F1F;}
+.chkbox{width:17px;height:17px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.opt.selected .chkbox{border-color:#1565C0;background:#1565C0;color:#fff;}
+.opt.correct-ans .chkbox{border-color:#1D9E75;background:#1D9E75;color:#fff;}
+.opt.wrong-ans .chkbox{border-color:#E24B4A;background:#E24B4A;color:#fff;}
+/* Label ABCD cố định */
+.opt-label{width:22px;height:22px;border-radius:50%;background:#f0f4f8;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#555;flex-shrink:0;}
+.opt.selected .opt-label{background:#1565C0;border-color:#1565C0;color:#fff;}
+.opt.correct-ans .opt-label{background:#1D9E75;border-color:#1D9E75;color:#fff;}
+.opt.wrong-ans .opt-label{background:#E24B4A;border-color:#E24B4A;color:#fff;}
+
+/* ĐIỀN TỪ */
+.fill-sentence{font-size:14px;color:#111;line-height:2.2;margin-bottom:10px;}
+.fill-inp{display:inline-block;border:none;border-bottom:2px solid #1565C0;background:transparent;outline:none;font-size:14px;color:#1565C0;font-weight:600;min-width:80px;max-width:180px;padding:0 4px;text-align:center;}
+.fill-inp.correct{border-bottom-color:#1D9E75;color:#1D9E75;}
+.fill-inp.wrong{border-bottom-color:#E24B4A;color:#E24B4A;}
+.fill-inp:disabled{cursor:not-allowed;}
+.fill-ans-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;}
+.fill-ans-label{color:#888;min-width:40px;}
+.fill-correct-val{color:#1D9E75;font-weight:600;}
+.fill-wrong-val{color:#E24B4A;}
+
+/* GHÉP CẶP */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.match-col{display:flex;flex-direction:column;gap:6px;}
+.match-item-left{background:#E6F1FB;border:1.5px solid #1565C0;border-radius:8px;padding:9px 12px;font-size:13px;color:#0C447C;font-weight:500;cursor:pointer;transition:all .15s;text-align:center;}
+.match-item-left.selected{background:#1565C0;color:#fff;}
+.match-item-left.matched{background:#E1F5EE;border-color:#1D9E75;color:#085041;cursor:default;}
+.match-item-left.wrong-match{background:#FCEBEB;border-color:#E24B4A;color:#791F1F;}
+.match-item-right{background:#fff;border:1.5px solid #ddd;border-radius:8px;padding:9px 12px;font-size:13px;color:#111;cursor:pointer;transition:all .15s;text-align:center;}
+.match-item-right:hover{border-color:#1D9E75;background:#f0fdf8;}
+.match-item-right.matched{background:#E1F5EE;border-color:#1D9E75;color:#085041;cursor:default;}
+.match-item-right.wrong-match{background:#FCEBEB;border-color:#E24B4A;color:#791F1F;}
+.match-hint{font-size:12px;color:#888;margin-bottom:8px;}
+.match-result-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:13px;}
+.match-arrow{color:#bbb;}
+
+/* SẮP XẾP */
+.order-bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:36px;padding:8px;background:#f8f9fb;border-radius:8px;border:1.5px dashed #ddd;}
+.order-bank.active-drop{border-color:#7C3AED;background:#faf5ff;}
+.order-slot{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:42px;padding:8px;background:#fff;border-radius:8px;border:1.5px dashed #7C3AED;}
+.word-chip{display:inline-flex;align-items:center;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;user-select:none;transition:all .15s;}
+.word-chip.bank{background:#F3EEFF;border:1.5px solid #7C3AED;color:#7C3AED;}
+.word-chip.bank:hover{background:#ede4ff;}
+.word-chip.placed{background:#7C3AED;border:1.5px solid #7C3AED;color:#fff;}
+.word-chip.placed:hover{background:#6D28D9;}
+.word-chip.correct-chip{background:#E1F5EE;border:1.5px solid #1D9E75;color:#085041;cursor:default;}
+.word-chip.wrong-chip{background:#FCEBEB;border:1.5px solid #E24B4A;color:#791F1F;cursor:default;}
+.order-hint{font-size:12px;color:#888;margin-bottom:6px;}
+
+/* KẾT QUẢ */
+.result-summary{background:#1565C0;border-radius:10px;padding:20px;margin-bottom:14px;text-align:center;}
+.score-big{font-size:38px;font-weight:500;color:#fff;}
+.score-lbl{font-size:13px;color:rgba(255,255,255,.75);margin-top:3px;}
+.score-msg{font-size:14px;color:#fff;margin-top:8px;font-weight:500;}
+.tag-ok{font-size:11px;background:#E1F5EE;color:#085041;padding:2px 8px;border-radius:8px;font-weight:500;}
+.tag-err{font-size:11px;background:#FCEBEB;color:#791F1F;padding:2px 8px;border-radius:8px;font-weight:500;}
+.hint-line{font-size:12px;color:#0F6E56;margin-top:8px;padding-top:8px;border-top:0.5px solid #eee;}
+
+.empty{font-size:13px;color:#aaa;text-align:center;padding:24px 0;}
+.loading{font-size:13px;color:#888;text-align:center;padding:24px 0;display:flex;align-items:center;justify-content:center;gap:8px;}
+.spinner{width:18px;height:18px;border:2px solid #ddd;border-top-color:#1565C0;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.shuffle-badge{background:#f0f4f8;border:0.5px solid #ddd;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#555;display:flex;align-items:center;gap:6px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TRANG CHỦ -->
+<div id="s-home" class="screen active">
+  <div class="hdr"><h2>Hệ thống học liệu</h2><h1>Danh sách môn học</h1></div>
+  <div class="pad">
+    <div class="search-wrap">
+      <i class="ti ti-search"></i>
+      <input type="text" id="search-mon" placeholder="Tìm kiếm môn học..." oninput="filterMon()" />
+    </div>
+    <div id="mon-list"><div class="loading"><div class="spinner"></div> Đang tải môn học...</div></div>
+  </div>
+</div>
+
+<!-- DANH SÁCH BÀI -->
+<div id="s-bai" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-home')"><i class="ti ti-arrow-left"></i> Danh sách môn</button>
+    <h1 id="bai-hdr"></h1>
+  </div>
+  <div class="pad">
+    <div id="bai-list"><div class="loading"><div class="spinner"></div> Đang tải...</div></div>
+  </div>
+</div>
+
+<!-- LÀM BÀI -->
+<div id="s-quiz" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Thoát bài</button>
+    <h1 id="quiz-hdr"></h1>
+  </div>
+  <div class="pad">
+    <div class="shuffle-badge"><i class="ti ti-arrows-shuffle"></i> Thứ tự câu hỏi đã được xáo trộn ngẫu nhiên</div>
+    <div id="quiz-body"></div>
+    <button class="green-btn" onclick="submitQuiz()"><i class="ti ti-send"></i> Nộp bài</button>
+  </div>
+</div>
+
+<!-- KẾT QUẢ -->
+<div id="s-result" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Về danh sách bài</button>
+    <h1>Kết quả bài làm</h1>
+  </div>
+  <div class="pad">
+    <div class="result-summary">
+      <div class="score-big" id="res-score">0/0</div>
+      <div class="score-lbl">câu đúng</div>
+      <div class="score-msg" id="res-msg"></div>
+    </div>
+    <div id="res-body"></div>
+    <button class="blk-btn full" style="margin-top:8px;" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Về danh sách bài</button>
+    <button class="green-btn" onclick="retryQuiz()"><i class="ti ti-refresh"></i> Làm lại (đảo mới)</button>
+  </div>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, onSnapshot, orderBy, query }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDU0g8Fyb7XwtCfOE1EzJez-lmL6NBEK0",
+  authDomain: "hoc-lieu-6ab83.firebaseapp.com",
+  projectId: "hoc-lieu-6ab83",
+  storageBucket: "hoc-lieu-6ab83.firebasestorage.app",
+  messagingSenderId: "383851597256",
+  appId: "1:383851597256:web:fbccb958eba5399d21c4fd"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+let curMonId=null, curBaiId=null;
+let curBaiQsRaw=[];  // dữ liệu gốc
+let curBaiQs=[];     // đã xử lý để hiển thị
+let ans={};          // {qi: ...} tùy loại
+let allMons=[];
+
+const LABELS=['A','B','C','D','E','F','G','H'];
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+window.goTo=goTo;
+
+// ===== SHUFFLE chỉ đảo THỨ TỰ câu hỏi, KHÔNG đảo đáp án =====
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+// Đảo thứ tự câu hỏi — ABCD luôn giữ nguyên thứ tự gốc
+function prepareQuiz(qs){
+  return shuffle(qs.map(q=>{
+    const t=q.type||'mc';
+    if(t==='match'){
+      // Đảo thứ tự VẾ PHẢI để học sinh phải ghép lại
+      return {...q, _rightOrder: shuffle((q.pairs||[]).map((_,i)=>i))};
+    }
+    if(t==='order'){
+      // Xáo trộn từ để học sinh sắp xếp
+      return {...q, _shuffledWords: shuffle([...(q.words||[])])};
+    }
+    // mc và fill: giữ nguyên hoàn toàn
+    return {...q};
+  }));
+}
+
+// ===== MÔN HỌC =====
+onSnapshot(query(collection(db,'monhoc'),orderBy('createdAt')), snap=>{
+  allMons=snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderMons(allMons);
+});
+
+function renderMons(list){
+  const el=document.getElementById('mon-list');
+  if(!list.length){el.innerHTML='<p class="empty">Chưa có môn học nào.</p>';return;}
+  el.innerHTML=list.map(m=>`
+    <div class="mon-card" onclick="openMon('${m.id}','${(m.name||'').replace(/'/g,"\\'")}')">
+      <div class="mon-ic"><i class="ti ti-book"></i></div>
+      <div style="flex:1">
+        <div class="mon-name">${m.name||''}</div>
+        <div class="mon-sub">Bấm để xem bài học</div>
+      </div>
+      <i class="ti ti-chevron-right" style="color:#bbb;font-size:16px;"></i>
+    </div>`).join('');
+}
+window.filterMon=function(){
+  const q=document.getElementById('search-mon').value.toLowerCase().trim();
+  renderMons(allMons.filter(m=>(m.name||'').toLowerCase().includes(q)));
+};
+window.openMon=function(id,name){
+  curMonId=id;
+  document.getElementById('bai-hdr').textContent=name;
+  loadBais(); goTo('s-bai');
+};
+
+// ===== BÀI HỌC =====
+function loadBais(){
+  const el=document.getElementById('bai-list');
+  el.innerHTML='<div class="loading"><div class="spinner"></div> Đang tải bài học...</div>';
+  onSnapshot(query(collection(db,'monhoc',curMonId,'bai'),orderBy('createdAt')), snap=>{
+    const bais=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!bais.length){el.innerHTML='<p class="empty">Môn này chưa có bài học nào.</p>';return;}
+    el.innerHTML=bais.map((b,i)=>`
+      <div class="bai-item">
+        <div class="bai-num">${i+1}</div>
+        <div style="flex:1">
+          <div class="bai-name">${b.name||''}</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">${(b.qs||[]).length} câu hỏi</div>
+        </div>
+        <button class="play-btn" onclick="openQuiz('${b.id}','${(b.name||'').replace(/'/g,"\\'")}')">
+          <i class="ti ti-player-play"></i> Làm bài
+        </button>
+      </div>`).join('');
+  });
+}
+
+// ===== LÀM BÀI =====
+window.openQuiz=async function(bid,bname){
+  curBaiId=bid; ans={};
+  document.getElementById('quiz-hdr').textContent=bname;
+  document.getElementById('quiz-body').innerHTML='<div class="loading"><div class="spinner"></div> Đang tải câu hỏi...</div>';
+  goTo('s-quiz');
+  const snap=await getDocs(collection(db,'monhoc',curMonId,'bai'));
+  const found=snap.docs.find(d=>d.id===bid);
+  curBaiQsRaw=found?JSON.parse(JSON.stringify(found.data().qs||[])):[];
+  curBaiQs=prepareQuiz(curBaiQsRaw);
+  renderQuiz();
+};
+window.retryQuiz=function(){
+  ans={};
+  curBaiQs=prepareQuiz(curBaiQsRaw);
+  renderQuiz(); goTo('s-quiz');
+};
+
+// ===== RENDER QUIZ =====
+function renderQuiz(){
+  const el=document.getElementById('quiz-body');
+  if(!curBaiQs.length){el.innerHTML='<p class="empty">Bài này chưa có câu hỏi nào.</p>';return;}
+  el.innerHTML=curBaiQs.map((q,qi)=>renderQBlock(q,qi)).join('');
+  // gắn listener fill
+  el.querySelectorAll('.fill-inp').forEach(inp=>{
+    inp.addEventListener('input',function(){
+      const qi=+this.dataset.qi, bi=+this.dataset.bi;
+      if(!ans[qi]) ans[qi]={};
+      ans[qi][bi]=this.value;
+    });
+  });
+}
+
+function renderQBlock(q,qi){
+  const t=q.type||'mc';
+  const typeLabel={mc:'🔵 Trắc nghiệm',fill:'🟠 Điền từ',match:'🟢 Ghép cặp',order:'🟣 Sắp xếp'};
+  const badge=`<span class="q-num-badge">Câu ${qi+1}</span><span class="qtype-badge ${t}">${typeLabel[t]||''}</span>`;
+  if(t==='mc')    return renderMCBlock(q,qi,badge);
+  if(t==='fill')  return renderFillBlock(q,qi,badge);
+  if(t==='match') return renderMatchBlock(q,qi,badge);
+  if(t==='order') return renderOrderBlock(q,qi,badge);
+  return '';
+}
+
+// ── TRẮC NGHIỆM ── ABCD cố định theo thứ tự gốc
+function renderMCBlock(q,qi,badge){
+  const sel=ans[qi]||[];
+  const hint=q.multi?`<span class="multi-badge"><i class="ti ti-info-circle"></i> Chọn ${(q.corrects||[]).length} đáp án đúng</span><br/>`:'';
+  const opts=(q.opts||[]).map((o,oi)=>{
+    const isSel=sel.includes(oi);
+    return `<div class="opt${isSel?' selected':''}" onclick="selectMC(${qi},${oi},${!!q.multi})">
+      <span class="opt-label">${LABELS[oi]||oi+1}</span>
+      <span style="flex:1">${o||'(Chưa có đáp án)'}</span>
+    </div>`;
+  }).join('');
+  return `<div class="q-block">${badge}<div class="q-text">${q.text||''}</div>${hint}${opts}</div>`;
+}
+
+// ── ĐIỀN TỪ ──
+function renderFillBlock(q,qi,badge){
+  const blanks=q.blanks||[];
+  // Hiển thị câu hỏi + ô trống inline
+  let sentence=q.text||'';
+  // Thay ___N___ bằng input, nếu không có pattern thì append ở dưới
+  let hasPattern=false;
+  let sIdx=0;
+  const rendered=sentence.replace(/_{2,}/g,()=>{
+    const bi=sIdx++;
+    const val=(ans[qi]||{})[bi]||'';
+    hasPattern=true;
+    return `<input class="fill-inp" data-qi="${qi}" data-bi="${bi}" value="${val.replace(/"/g,'&quot;')}" placeholder="..."/>`;
+  });
+
+  let html=`<div class="q-block">${badge}`;
+  if(hasPattern){
+    html+=`<div class="q-text fill-sentence">${rendered}</div>`;
+  } else {
+    html+=`<div class="q-text">${sentence}</div>`;
+    html+=`<div style="margin-top:4px;">`;
+    blanks.forEach((b,bi)=>{
+      const val=(ans[qi]||{})[bi]||'';
+      html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:12px;color:#888;min-width:40px;">Ô ${bi+1}:</span>
+        <input class="fill-inp" data-qi="${qi}" data-bi="${bi}" value="${val.replace(/"/g,'&quot;')}" placeholder="Nhập câu trả lời..." style="width:100%;min-width:120px;max-width:100%;display:block;border:1.5px solid #1565C0;border-radius:7px;padding:8px 10px;font-size:13px;color:#111;background:#fff;outline:none;"/>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  return html;
+}
+
+// ── GHÉP CẶP ──
+function renderMatchBlock(q,qi,badge){
+  const pairs=q.pairs||[];
+  const rightOrder=q._rightOrder||pairs.map((_,i)=>i);
+  const matched=ans[qi]||{}; // {leftIdx: rightIdx}
+  const selectedLeft=window._matchSelLeft?.[qi]??-1;
+
+  const leftCol=pairs.map((p,li)=>{
+    const isMatched=matched[li]!==undefined;
+    const isSel=selectedLeft===li;
+    let cls='match-item-left';
+    if(isMatched) cls+=' matched';
+    else if(isSel) cls+=' selected';
+    return `<div class="${cls}" onclick="matchClickLeft(${qi},${li})">${p.left||''}</div>`;
+  }).join('');
+
+  const rightCol=rightOrder.map((origRi,dispRi)=>{
+    const isMatched=Object.values(matched).includes(origRi);
+    let cls='match-item-right';
+    if(isMatched) cls+=' matched';
+    return `<div class="${cls}" onclick="matchClickRight(${qi},${origRi})">${pairs[origRi]?.right||''}</div>`;
+  }).join('');
+
+  const matchedCount=Object.keys(matched).length;
+  return `<div class="q-block">${badge}
+    <div class="q-text">${q.text||''}</div>
+    <p class="match-hint"><i class="ti ti-click"></i> Bấm một vế trái → rồi bấm vế phải để ghép cặp. Đã ghép: ${matchedCount}/${pairs.length}</p>
+    <div class="match-wrap"><div class="match-col">${leftCol}</div><div class="match-col">${rightCol}</div></div>
+    ${matchedCount>0?`<button style="font-size:11px;color:#E24B4A;background:none;border:none;cursor:pointer;margin-top:4px;" onclick="resetMatch(${qi})">↺ Xóa ghép cặp này</button>`:''}
+  </div>`;
+}
+
+// ── SẮP XẾP ──
+function renderOrderBlock(q,qi,badge){
+  const shuffled=q._shuffledWords||[];
+  const placed=ans[qi]||[];  // mảng từ đã đặt theo thứ tự
+  const inBank=shuffled.filter(w=>!placed.includes(w)||(placed.filter(x=>x===w).length < shuffled.filter(x=>x===w).length));
+  // tính toán từ còn trong bank
+  const placedCopy=[...placed];
+  const bankWords=shuffled.filter(w=>{
+    const idx=placedCopy.indexOf(w);
+    if(idx>=0){placedCopy.splice(idx,1);return false;}
+    return true;
+  });
+
+  const slotHtml=placed.map((w,wi)=>
+    `<span class="word-chip placed" onclick="removeFromSlot(${qi},${wi})">${w}</span>`
+  ).join('');
+  const bankHtml=bankWords.map((w,wi)=>
+    `<span class="word-chip bank" onclick="placeWord(${qi},'${w.replace(/'/g,"\\'")}','${wi}')">${w}</span>`
+  ).join('');
+
+  return `<div class="q-block">${badge}
+    <div class="q-text">${q.text||''}</div>
+    <p class="order-hint"><i class="ti ti-hand-click"></i> Bấm từ ở ô dưới để xếp vào câu. Bấm từ đã xếp để bỏ ra.</p>
+    <div class="lbl" style="margin-bottom:4px;">Câu của bạn:</div>
+    <div class="order-slot">${slotHtml||'<span style="color:#ccc;font-size:12px;">Bấm từ bên dưới để bắt đầu...</span>'}</div>
+    <div class="lbl" style="margin-bottom:4px;">Các từ:</div>
+    <div class="order-bank">${bankHtml}</div>
+  </div>`;
+}
+
+// ===== ACTIONS =====
+window.selectMC=function(qi,oi,multi){
+  if(!ans[qi]) ans[qi]=[];
+  const arr=ans[qi],idx=arr.indexOf(oi);
+  if(multi){if(idx>=0)arr.splice(idx,1);else arr.push(oi);}
+  else{ans[qi]=[oi];}
+  // re-render chỉ block này
+  const blocks=document.querySelectorAll('.q-block');
+  if(blocks[qi]) blocks[qi].outerHTML; // trigger
+  renderQuiz();
+};
+
+// MATCH
+if(!window._matchSelLeft) window._matchSelLeft={};
+window.matchClickLeft=function(qi,li){
+  if((ans[qi]||{})[li]!==undefined) return; // đã ghép rồi
+  if(!window._matchSelLeft) window._matchSelLeft={};
+  window._matchSelLeft[qi]=li;
+  renderQuiz();
+};
+window.matchClickRight=function(qi,origRi){
+  const li=window._matchSelLeft?.[qi];
+  if(li===undefined||li<0) return;
+  // kiểm tra right chưa được dùng
+  const matched=ans[qi]||{};
+  if(Object.values(matched).includes(origRi)) return;
+  if(!ans[qi]) ans[qi]={};
+  ans[qi][li]=origRi;
+  window._matchSelLeft[qi]=-1;
+  renderQuiz();
+};
+window.resetMatch=function(qi){
+  ans[qi]={};
+  if(window._matchSelLeft) window._matchSelLeft[qi]=-1;
+  renderQuiz();
+};
+
+// ORDER
+window.placeWord=function(qi,w){
+  if(!ans[qi]) ans[qi]=[];
+  ans[qi].push(w);
+  renderQuiz();
+};
+window.removeFromSlot=function(qi,wi){
+  if(!ans[qi]) return;
+  ans[qi].splice(wi,1);
+  renderQuiz();
+};
+
+// ===== NỘP BÀI =====
+window.submitQuiz=function(){
+  if(!curBaiQs.length){goTo('s-bai');return;}
+  let correct=0;
+  curBaiQs.forEach((q,qi)=>{
+    const t=q.type||'mc';
+    if(t==='mc'){
+      const ua=ans[qi]||[];
+      if(q.multi){if((q.corrects||[]).slice().sort().join(',')===ua.slice().sort().join(','))correct++;}
+      else{if(ua[0]===q.correct)correct++;}
+    } else if(t==='fill'){
+      const blanks=q.blanks||[];
+      const ua=ans[qi]||{};
+      const allOk=blanks.every((b,bi)=>(ua[bi]||'').trim().toLowerCase()===b.trim().toLowerCase());
+      if(allOk) correct++;
+    } else if(t==='match'){
+      const pairs=q.pairs||[];
+      const ua=ans[qi]||{};
+      const allOk=pairs.every((_,li)=>ua[li]===li);
+      if(allOk) correct++;
+    } else if(t==='order'){
+      const words=q.words||[];
+      const ua=ans[qi]||[];
+      if(ua.join('|')===words.join('|')) correct++;
+    }
+  });
+
+  const total=curBaiQs.length;
+  const pct=Math.round(correct/total*100);
+  document.getElementById('res-score').textContent=correct+'/'+total;
+  document.getElementById('res-msg').textContent=
+    pct===100?'🎉 Xuất sắc! Hoàn hảo!':
+    pct>=80?'👍 Rất tốt! Cố gắng thêm nhé!':
+    pct>=60?'😊 Khá tốt! Ôn lại phần sai nhé!':
+    '💪 Cần cố gắng hơn! Làm lại nhé!';
+
+  document.getElementById('res-body').innerHTML=curBaiQs.map((q,qi)=>{
+    const t=q.type||'mc';
+    let isOk=false, detailHtml='';
+
+    if(t==='mc'){
+      const ua=ans[qi]||[];
+      isOk=q.multi?((q.corrects||[]).slice().sort().join(',')===ua.slice().sort().join(',')):(ua[0]===q.correct);
+      const cs=q.multi?(q.corrects||[]):[q.correct];
+      detailHtml=(q.opts||[]).map((o,oi)=>{
+        const isCo=cs.includes(oi),isUs=ua.includes(oi);
+        const cls='opt'+(isCo?' correct-ans':(isUs&&!isCo?' wrong-ans':''));
+        return `<div class="${cls}"><span class="opt-label">${LABELS[oi]||oi+1}</span><span>${o}</span></div>`;
+      }).join('');
+    } else if(t==='fill'){
+      const blanks=q.blanks||[];
+      const ua=ans[qi]||{};
+      const results=blanks.map((b,bi)=>{
+        const given=(ua[bi]||'').trim();
+        const ok=given.toLowerCase()===b.trim().toLowerCase();
+        return {b,given,ok};
+      });
+      isOk=results.every(r=>r.ok);
+      detailHtml=results.map((r,bi)=>`
+        <div class="fill-ans-row">
+          <span class="fill-ans-label">Ô ${bi+1}:</span>
+          <span class="${r.ok?'fill-correct-val':'fill-wrong-val'}">${r.given||'(bỏ trống)'}</span>
+          ${!r.ok?`<span style="color:#aaa;font-size:12px;">→ Đúng: <b style="color:#1D9E75;">${r.b}</b></span>`:'<span style="font-size:12px;color:#1D9E75;">✓</span>'}
+        </div>`).join('');
+    } else if(t==='match'){
+      const pairs=q.pairs||[];
+      const ua=ans[qi]||{};
+      isOk=pairs.every((_,li)=>ua[li]===li);
+      detailHtml=pairs.map((p,li)=>{
+        const gotRi=ua[li];
+        const ok=gotRi===li;
+        const gotText=gotRi!==undefined?(pairs[gotRi]?.right||'(không rõ)'):'(chưa ghép)';
+        return `<div class="match-result-row">
+          <span style="flex:1;background:${ok?'#E1F5EE':'#FCEBEB'};border-radius:6px;padding:5px 10px;font-size:13px;color:${ok?'#085041':'#791F1F'};">
+            ${p.left} <span class="match-arrow">↔</span> ${gotText}
+          </span>
+          <span>${ok?'✓':'✗ → '+p.right}</span>
+        </div>`;
+      }).join('');
+    } else if(t==='order'){
+      const words=q.words||[];
+      const ua=ans[qi]||[];
+      isOk=ua.join('|')===words.join('|');
+      detailHtml=`
+        <div style="margin-bottom:6px;font-size:13px;color:#555;">Câu bạn xếp:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;">
+          ${ua.map((w,wi)=>{
+            const ok=words[wi]===w;
+            return `<span class="word-chip ${ok?'correct-chip':'wrong-chip'}">${w}</span>`;
+          }).join('')}
+        </div>
+        ${!isOk?`<div style="font-size:12px;color:#1D9E75;margin-top:4px;">✓ Đáp án đúng: <b>${words.join(' ')}</b></div>`:''}`;
+    }
+
+    return `<div class="q-block">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span><span class="q-num-badge">Câu ${qi+1}</span></span>
+        <span class="${isOk?'tag-ok':'tag-err'}">${isOk?'✓ Đúng':'✗ Sai'}</span>
+      </div>
+      <div class="q-text">${q.text||''}</div>
+      ${detailHtml}
+      ${!isOk&&t==='mc'?'<div class="hint-line">Đáp án đúng được tô màu xanh bên trên</div>':''}
+    </div>`;
+  }).join('');
+
+  goTo('s-result');
+};
+</script>
+</body>
+</html>

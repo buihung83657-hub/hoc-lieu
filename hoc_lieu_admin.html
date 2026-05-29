@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hệ thống học liệu – Admin</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;width:100%;font-family:sans-serif;}
+.app{display:flex;min-height:100vh;background:#f0f4f8;}
+.sidebar{width:80px;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+.sb-item{width:68px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:10px;cursor:pointer;color:#aaa;font-size:10px;text-align:center;border:none;background:none;transition:background .15s,color .15s;}
+.sb-item i{font-size:20px;}
+.sb-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.sb-item.active{background:#1565C0;color:#fff;}
+.main{margin-left:80px;flex:1;min-height:100vh;}
+.screen{display:none;}.screen.active{display:block;}
+.hdr{background:#1565C0;color:#fff;padding:14px 20px;}
+.hdr h2{font-size:12px;opacity:.75;margin-bottom:3px;}
+.hdr h1{font-size:18px;font-weight:500;}
+.back-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-bottom:8px;padding:5px 12px;border-radius:20px;}
+.pad{padding:14px;max-width:860px;margin:0 auto;}
+.blk-btn{background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.blk-btn.full{width:100%;justify-content:center;margin-top:8px;}
+.green-btn{background:#27500A;color:#fff;border:none;border-radius:8px;padding:11px 16px;font-size:13px;font-weight:500;cursor:pointer;width:100%;justify-content:center;display:flex;align-items:center;gap:6px;margin-top:8px;}
+.play-btn{background:#1565C0;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.sm-btn{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.del-btn{background:#E24B4A;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;}
+.outline-btn{background:none;border:1.5px solid #1a1a1a;color:#1a1a1a;border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.outline-btn:hover{background:#1a1a1a;color:#fff;}
+.card{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.card-title{font-size:15px;font-weight:500;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.lbl{font-size:11px;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+input[type=text]{width:100%;border:none;border-radius:7px;padding:10px 12px;font-size:13px;color:#e8e8e8;background:#1a1a1a;margin-bottom:8px;outline:none;}
+input[type=text]::placeholder{color:#666;}
+input[type=text]:focus{background:#222;outline:2px solid #378ADD;outline-offset:1px;}
+select.dark-sel{width:100%;border:none;border-radius:7px;padding:10px 12px;font-size:13px;color:#e8e8e8;background:#1a1a1a;margin-bottom:8px;outline:none;cursor:pointer;}
+select.dark-sel:focus{outline:2px solid #378ADD;outline-offset:1px;}
+textarea{width:100%;border:none;border-radius:7px;padding:10px 12px;font-size:13px;color:#e8e8e8;background:#1a1a1a;margin-bottom:8px;outline:none;resize:vertical;min-height:64px;}
+textarea::placeholder{color:#666;}
+.mon-card{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mon-card:hover{border-color:#1565C0;}
+.mon-ic{width:36px;height:36px;border-radius:8px;background:#1565C0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;}
+.mon-name{font-size:13px;font-weight:500;color:#111;}
+.mon-sub{font-size:11px;color:#888;margin-top:1px;}
+.bai-item{background:#fff;border-radius:8px;border:0.5px solid #ddd;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.bai-num{width:26px;height:26px;border-radius:50%;background:#1565C0;color:#fff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bai-name{font-size:13px;font-weight:500;color:#111;flex:1;}
+
+/* ===== EDITOR ===== */
+.q-editor-block{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.q-editor-title{font-size:13px;font-weight:600;color:#111;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.del-q-btn{background:none;border:none;color:#E24B4A;cursor:pointer;font-size:17px;padding:0;}
+.opt-row{display:flex;gap:7px;align-items:center;margin-bottom:7px;}
+.opt-row input{margin-bottom:0;flex:1;}
+.chk-toggle{width:30px;height:30px;border-radius:6px;border:2px solid #1D9E75;background:#fff;cursor:pointer;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#1D9E75;}
+.chk-toggle.on{background:#1D9E75;color:#fff;}
+.del-opt-btn{width:30px;height:30px;border-radius:6px;border:2px solid #E24B4A;background:#fff;cursor:pointer;font-size:14px;color:#E24B4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.del-opt-btn:hover{background:#E24B4A;color:#fff;}
+
+/* Chọn loại câu hỏi */
+.qtype-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.qtype-btn{flex:1;min-width:120px;padding:8px 6px;border-radius:8px;border:2px solid #ddd;background:#fff;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;color:#555;transition:all .15s;}
+.qtype-btn:hover{border-color:#aaa;color:#111;}
+.qtype-btn.sel-mc{border-color:#1565C0;background:#E6F1FB;color:#1565C0;}
+.qtype-btn.sel-fill{border-color:#E07B2A;background:#FEF3E8;color:#E07B2A;}
+.qtype-btn.sel-match{border-color:#1D9E75;background:#E1F5EE;color:#1D9E75;}
+.qtype-btn.sel-order{border-color:#7C3AED;background:#F3EEFF;color:#7C3AED;}
+
+/* Điền từ */
+.fill-hint{font-size:11px;color:#888;margin-bottom:6px;line-height:1.5;}
+.blank-row{display:flex;gap:7px;align-items:center;margin-bottom:7px;}
+.blank-row input{margin-bottom:0;flex:1;}
+.blank-label{font-size:11px;color:#aaa;white-space:nowrap;}
+
+/* Ghép cặp */
+.pair-row{display:flex;gap:7px;align-items:center;margin-bottom:7px;}
+.pair-row input{margin-bottom:0;flex:1;}
+.pair-sep{font-size:14px;color:#888;flex-shrink:0;}
+
+/* Sắp xếp từ */
+.words-hint{font-size:11px;color:#888;margin-bottom:6px;}
+.word-tag{display:inline-flex;align-items:center;gap:5px;background:#F3EEFF;border:1.5px solid #7C3AED;color:#7C3AED;border-radius:6px;padding:4px 9px;font-size:12px;font-weight:500;margin:3px;}
+.word-tag .del-word{background:none;border:none;color:#7C3AED;cursor:pointer;font-size:12px;padding:0;line-height:1;}
+
+/* Quiz */
+.q-block{background:#fff;border-radius:10px;border:0.5px solid #ddd;padding:14px;margin-bottom:10px;}
+.q-num-badge{font-size:11px;background:#1565C0;color:#fff;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px;}
+.qtype-badge{font-size:11px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px;margin-left:6px;}
+.qtype-badge.mc{background:#E6F1FB;color:#1565C0;}
+.qtype-badge.fill{background:#FEF3E8;color:#E07B2A;}
+.qtype-badge.match{background:#E1F5EE;color:#1D9E75;}
+.qtype-badge.order{background:#F3EEFF;color:#7C3AED;}
+.q-text{font-size:14px;font-weight:500;color:#111;margin-bottom:10px;line-height:1.5;white-space:pre-wrap;}
+.multi-badge{font-size:11px;background:#FAEEDA;color:#633806;padding:3px 10px;border-radius:6px;margin-bottom:10px;display:inline-block;}
+.opt{padding:10px 13px;border-radius:8px;border:1px solid #ddd;font-size:13px;color:#111;margin-bottom:7px;cursor:pointer;display:flex;align-items:center;gap:9px;}
+.opt:hover{border-color:#1565C0;}
+.opt.selected{border-color:#1565C0;background:#E6F1FB;color:#0C447C;}
+.opt.correct-ans{background:#E1F5EE;border-color:#1D9E75;color:#085041;}
+.opt.wrong-ans{background:#FCEBEB;border-color:#E24B4A;color:#791F1F;}
+.chkbox{width:17px;height:17px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.opt.selected .chkbox{border-color:#1565C0;background:#1565C0;color:#fff;}
+.opt.correct-ans .chkbox{border-color:#1D9E75;background:#1D9E75;color:#fff;}
+.opt.wrong-ans .chkbox{border-color:#E24B4A;background:#E24B4A;color:#fff;}
+.result-summary{background:#1565C0;border-radius:10px;padding:18px;margin-bottom:12px;text-align:center;}
+.score-big{font-size:34px;font-weight:500;color:#fff;}
+.score-lbl{font-size:13px;color:rgba(255,255,255,.75);margin-top:2px;}
+.tag-ok{font-size:11px;background:#E1F5EE;color:#085041;padding:2px 8px;border-radius:8px;}
+.tag-err{font-size:11px;background:#FCEBEB;color:#791F1F;padding:2px 8px;border-radius:8px;}
+.hint-line{font-size:12px;color:#0F6E56;margin-top:8px;padding-top:8px;border-top:0.5px solid #eee;}
+.empty{font-size:13px;color:#aaa;text-align:center;padding:20px 0;}
+.loading{font-size:13px;color:#888;text-align:center;padding:20px 0;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+
+/* Add Q menu */
+.addq-menu{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.addq-btn{flex:1;min-width:140px;padding:10px 8px;border-radius:8px;border:2px dashed #ddd;background:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:#555;transition:all .15s;}
+.addq-btn:hover{background:#f5f5f5;border-color:#bbb;}
+.addq-btn.mc{border-color:#1565C0;color:#1565C0;}
+.addq-btn.mc:hover{background:#E6F1FB;}
+.addq-btn.fill{border-color:#E07B2A;color:#E07B2A;}
+.addq-btn.fill:hover{background:#FEF3E8;}
+.addq-btn.match{border-color:#1D9E75;color:#1D9E75;}
+.addq-btn.match:hover{background:#E1F5EE;}
+.addq-btn.order{border-color:#7C3AED;color:#7C3AED;}
+.addq-btn.order:hover{background:#F3EEFF;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <button class="sb-item active" id="sb-home" onclick="goTo('s-home')">
+    <i class="ti ti-home"></i>Trang chủ
+  </button>
+  <button class="sb-item" id="sb-create" onclick="goTo('s-create')">
+    <i class="ti ti-circle-plus"></i>Tạo bài học
+  </button>
+  <button class="sb-item" id="sb-bai" onclick="goTo('s-bai')">
+    <i class="ti ti-list"></i>Danh sách bài
+  </button>
+  <button class="sb-item" id="sb-edit" onclick="goTo('s-edit')">
+    <i class="ti ti-pencil"></i>Soạn câu hỏi
+  </button>
+</nav>
+
+<div class="main">
+<div class="toast" id="toast"></div>
+
+<!-- TRANG CHỦ -->
+<div id="s-home" class="screen active">
+  <div class="hdr"><h2>Hệ thống học liệu – Admin</h2><h1>Trang chủ</h1></div>
+  <div class="pad">
+    <div id="mon-list"><div class="loading">Đang tải dữ liệu...</div></div>
+  </div>
+</div>
+
+<!-- TẠO BÀI HỌC -->
+<div id="s-create" class="screen">
+  <div class="hdr"><h2>Hệ thống học liệu – Admin</h2><h1>Tạo bài học</h1></div>
+  <div class="pad">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-school"></i> Tạo môn học mới</div>
+      <div class="lbl">Tên môn học</div>
+      <input type="text" id="inp-mon" placeholder="VD: Nhập môn lập trình" />
+      <button class="blk-btn full" onclick="addMon()"><i class="ti ti-plus"></i> Thêm môn học</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-file-plus"></i> Tạo bài học mới</div>
+      <div class="lbl">Chọn môn học</div>
+      <select id="sel-mon" class="dark-sel"><option value="">-- Chọn môn --</option></select>
+      <div class="lbl">Tên bài học</div>
+      <input type="text" id="inp-bai-create" placeholder="VD: Bài 1: Giới thiệu" />
+      <button class="blk-btn full" onclick="addBaiFromCreate()"><i class="ti ti-plus"></i> Thêm bài học</button>
+    </div>
+  </div>
+</div>
+
+<!-- DANH SÁCH BÀI -->
+<div id="s-bai" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-home')"><i class="ti ti-arrow-left"></i> Danh sách môn</button>
+    <h1 id="bai-hdr"></h1>
+  </div>
+  <div class="pad"><div id="bai-list"></div></div>
+</div>
+
+<!-- SOẠN CÂU HỎI -->
+<div id="s-edit" class="screen">
+  <div class="hdr">
+    <button class="back-btn" onclick="goTo('s-bai')"><i class="ti ti-arrow-left"></i> Danh sách bài</button>
+    <h1 id="edit-hdr"></h1>
+  </div>
+  <div class="pad">
+    <div id="q-editor"></div>
+
+    <!-- 4 nút thêm loại câu hỏi -->
+    <div class="addq-menu">
+      <button class="addq-btn mc"    onclick="addQ('mc')">   🔵 Trắc nghiệm</button>
+      <button class="addq-btn fill"  onclick="addQ('fill')"> 🟠 Điền từ vào chỗ trống</button>
+      <button class="addq-btn match" onclick="addQ('match')">🟢 Kéo thả ghép cặp</button>
+      <button class="addq-btn order" onclick="addQ('order')">🟣 Sắp xếp thành câu</button>
+    </div>
+
+    <button class="green-btn" onclick="saveBai()"><i class="ti ti-device-floppy"></i> Lưu bài học lên Firebase</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, getDocs, updateDoc, deleteDoc, onSnapshot, orderBy, query }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDU0g8Fyb7XwtCfOE1EzJez-lmL6NBEK0",
+  authDomain: "hoc-lieu-6ab83.firebaseapp.com",
+  projectId: "hoc-lieu-6ab83",
+  storageBucket: "hoc-lieu-6ab83.firebasestorage.app",
+  messagingSenderId: "383851597256",
+  appId: "1:383851597256:web:fbccb958eba5399d21c4fd"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+let curMonId=null, curBaiId=null, curBaiQs=[];
+const sbMap={'s-home':'sb-home','s-create':'sb-create','s-bai':'sb-bai','s-edit':'sb-edit'};
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  const sb=sbMap[id]; if(sb) document.getElementById(sb).classList.add('active');
+}
+window.goTo=goTo;
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===== MÔN HỌC =====
+onSnapshot(query(collection(db,'monhoc'),orderBy('createdAt')), snap=>{
+  const el=document.getElementById('mon-list');
+  if(snap.empty){el.innerHTML='<p class="empty">Chưa có môn học nào. Vào "Tạo bài học" để bắt đầu!</p>';}
+  else{
+    el.innerHTML=snap.docs.map(d=>{
+      const name=d.data().name||'';
+      return `<div class="mon-card">
+        <div class="mon-ic" onclick="openMon('${d.id}','${name.replace(/'/g,"\\'")}')"><i class="ti ti-book"></i></div>
+        <div style="flex:1;cursor:pointer;" onclick="openMon('${d.id}','${name.replace(/'/g,"\\'")}')">
+          <div class="mon-name">${name}</div><div class="mon-sub">Bấm để xem bài học</div>
+        </div>
+        <button class="del-btn" onclick="delMon('${d.id}')"><i class="ti ti-trash"></i></button>
+      </div>`;
+    }).join('');
+  }
+  const sel=document.getElementById('sel-mon'), cur=sel.value;
+  sel.innerHTML='<option value="">-- Chọn môn --</option>'+snap.docs.map(d=>`<option value="${d.id}">${d.data().name||''}</option>`).join('');
+  if(cur) sel.value=cur;
+});
+
+window.addMon=async function(){
+  const v=document.getElementById('inp-mon').value.trim(); if(!v)return;
+  await addDoc(collection(db,'monhoc'),{name:v,createdAt:Date.now()});
+  document.getElementById('inp-mon').value=''; showToast('Đã thêm môn học!');
+};
+window.delMon=async function(id){
+  if(!confirm('Xóa môn học này?'))return;
+  await deleteDoc(doc(db,'monhoc',id)); showToast('Đã xóa!');
+};
+window.addBaiFromCreate=async function(){
+  const monId=document.getElementById('sel-mon').value;
+  const v=document.getElementById('inp-bai-create').value.trim();
+  if(!monId){showToast('Chọn môn học trước!');return;}
+  if(!v){showToast('Nhập tên bài học!');return;}
+  await addDoc(collection(db,'monhoc',monId,'bai'),{name:v,qs:[],createdAt:Date.now()});
+  document.getElementById('inp-bai-create').value=''; showToast('Đã thêm bài học!');
+};
+window.openMon=function(id,name){
+  curMonId=id; document.getElementById('bai-hdr').textContent=name;
+  loadBais(); goTo('s-bai');
+};
+
+// ===== BÀI HỌC =====
+function loadBais(){
+  const el=document.getElementById('bai-list');
+  el.innerHTML='<div class="loading">Đang tải...</div>';
+  onSnapshot(query(collection(db,'monhoc',curMonId,'bai'),orderBy('createdAt')), snap=>{
+    if(snap.empty){el.innerHTML='<p class="empty">Chưa có bài học nào.</p>';return;}
+    el.innerHTML=snap.docs.map((d,i)=>{
+      const name=d.data().name||'';
+      return `<div class="bai-item">
+        <div class="bai-num">${i+1}</div>
+        <div class="bai-name">${name}</div>
+        <button class="sm-btn" onclick="openEdit('${d.id}','${name.replace(/'/g,"\\'")}')"><i class="ti ti-edit"></i> Soạn câu hỏi</button>
+        <button class="del-btn" style="margin-left:6px;" onclick="delBai('${d.id}')"><i class="ti ti-trash"></i></button>
+      </div>`;
+    }).join('');
+  });
+}
+window.delBai=async function(id){
+  if(!confirm('Xóa bài học này?'))return;
+  await deleteDoc(doc(db,'monhoc',curMonId,'bai',id)); showToast('Đã xóa bài học!');
+};
+
+// ===== SOẠN CÂU HỎI =====
+window.openEdit=async function(bid,bname){
+  curBaiId=bid;
+  document.getElementById('edit-hdr').textContent='Soạn: '+bname;
+  const snap=await getDocs(collection(db,'monhoc',curMonId,'bai'));
+  const found=snap.docs.find(d=>d.id===bid);
+  curBaiQs=found?JSON.parse(JSON.stringify(found.data().qs||[])):[];
+  renderEditor(); goTo('s-edit');
+};
+
+// ── syncFromDOM: lưu tất cả input đang hiển thị vào curBaiQs ──
+function syncFromDOM(){
+  document.querySelectorAll('.q-editor-block').forEach(block=>{
+    const qi=+block.dataset.qi;
+    const q=curBaiQs[qi]; if(!q) return;
+    // text câu hỏi
+    const ta=block.querySelector('.q-text-input');
+    if(ta) q.text=ta.value;
+
+    if(q.type==='mc'){
+      block.querySelectorAll('.opt-input').forEach(inp=>{ q.opts[+inp.dataset.oi]=inp.value; });
+    } else if(q.type==='fill'){
+      q.blanks=[];
+      block.querySelectorAll('.blank-input').forEach(inp=>{ q.blanks.push(inp.value); });
+    } else if(q.type==='match'){
+      q.pairs=[];
+      block.querySelectorAll('.pair-left').forEach((inp,i)=>{
+        const right=block.querySelectorAll('.pair-right')[i];
+        q.pairs.push({left:inp.value, right:right?right.value:''});
+      });
+    } else if(q.type==='order'){
+      // words managed via state, no extra sync needed
+    }
+  });
+}
+
+// ── renderEditor ──
+function renderEditor(){
+  const el=document.getElementById('q-editor');
+  if(!curBaiQs.length){
+    el.innerHTML='<p class="empty" style="margin-bottom:10px;">Chưa có câu hỏi nào. Chọn loại câu hỏi bên dưới để bắt đầu.</p>';
+    return;
+  }
+  el.innerHTML=curBaiQs.map((q,qi)=>renderQBlock(q,qi)).join('');
+  // gắn listeners
+  el.querySelectorAll('.q-text-input').forEach(ta=>{
+    ta.addEventListener('input',function(){curBaiQs[+this.dataset.qi].text=this.value;});
+  });
+  el.querySelectorAll('.opt-input').forEach(inp=>{
+    inp.addEventListener('input',function(){curBaiQs[+this.dataset.qi].opts[+this.dataset.oi]=this.value;});
+  });
+  el.querySelectorAll('.blank-input').forEach((inp,idx)=>{
+    inp.addEventListener('input',function(){
+      const qi=+this.dataset.qi, bi=+this.dataset.bi;
+      curBaiQs[qi].blanks[bi]=this.value;
+    });
+  });
+  el.querySelectorAll('.pair-left').forEach(inp=>{
+    inp.addEventListener('input',function(){
+      const qi=+this.dataset.qi, pi=+this.dataset.pi;
+      curBaiQs[qi].pairs[pi].left=this.value;
+    });
+  });
+  el.querySelectorAll('.pair-right').forEach(inp=>{
+    inp.addEventListener('input',function(){
+      const qi=+this.dataset.qi, pi=+this.dataset.pi;
+      curBaiQs[qi].pairs[pi].right=this.value;
+    });
+  });
+  el.querySelectorAll('.order-word-input').forEach(inp=>{
+    inp.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){e.preventDefault();addWordToOrder(+this.dataset.qi,this.value.trim());this.value='';}
+    });
+  });
+}
+
+function renderQBlock(q,qi){
+  const typeLabel={'mc':'🔵 Trắc nghiệm','fill':'🟠 Điền từ','match':'🟢 Ghép cặp','order':'🟣 Sắp xếp'};
+  const typeBg={'mc':'#E6F1FB','fill':'#FEF3E8','match':'#E1F5EE','order':'#F3EEFF'};
+  const typeColor={'mc':'#1565C0','fill':'#E07B2A','match':'#1D9E75','order':'#7C3AED'};
+  const t=q.type||'mc';
+
+  let body='';
+  if(t==='mc') body=renderMCEditor(q,qi);
+  else if(t==='fill') body=renderFillEditor(q,qi);
+  else if(t==='match') body=renderMatchEditor(q,qi);
+  else if(t==='order') body=renderOrderEditor(q,qi);
+
+  return `<div class="q-editor-block" data-qi="${qi}">
+    <div class="q-editor-title">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;padding:2px 10px;border-radius:8px;background:${typeBg[t]};color:${typeColor[t]};">${typeLabel[t]}</span>
+        Câu ${qi+1}
+      </span>
+      <button class="del-q-btn" onclick="delQ(${qi})"><i class="ti ti-trash"></i></button>
+    </div>
+    <div class="lbl">Nội dung câu hỏi / đề bài</div>
+    <textarea class="q-text-input" data-qi="${qi}" placeholder="Nhập đề bài...">${q.text||''}</textarea>
+    ${body}
+  </div>`;
+}
+
+// ── MC ──
+function renderMCEditor(q,qi){
+  const opts=q.opts||['',''];
+  return `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <input type="checkbox" id="multi-${qi}" ${q.multi?'checked':''} onchange="toggleMulti(${qi},this.checked)" style="width:auto;margin:0;accent-color:#1a1a1a;"/>
+      <label for="multi-${qi}" style="font-size:12px;color:#555;cursor:pointer;">Cho phép chọn nhiều đáp án đúng</label>
+    </div>
+    <div class="lbl">Các đáp án <span style="color:#1D9E75;">(bấm ✓ để đánh dấu đúng)</span></div>
+    ${opts.map((o,oi)=>{
+      const isC=q.multi?(q.corrects||[]).includes(oi):(q.correct===oi);
+      return `<div class="opt-row">
+        <input type="text" class="opt-input" data-qi="${qi}" data-oi="${oi}" value="${(o||'').replace(/"/g,'&quot;')}" placeholder="Đáp án ${oi+1}..."/>
+        <button class="chk-toggle${isC?' on':''}" onclick="setCorrect(${qi},${oi})">✓</button>
+        <button class="del-opt-btn" onclick="delOpt(${qi},${oi})"><i class="ti ti-x"></i></button>
+      </div>`;
+    }).join('')}
+    <button class="outline-btn" style="margin-top:4px;" onclick="addOpt(${qi})"><i class="ti ti-plus"></i> Thêm đáp án</button>`;
+}
+
+// ── FILL ──
+function renderFillEditor(q,qi){
+  const blanks=q.blanks||[''];
+  return `
+    <p class="fill-hint">Nhập từng từ / cụm từ cần điền vào ô trống. Học sinh sẽ phải nhập đúng để được điểm.</p>
+    <div class="lbl">Các từ cần điền (theo thứ tự xuất hiện)</div>
+    ${blanks.map((b,bi)=>`
+      <div class="blank-row">
+        <span class="blank-label">Ô ${bi+1}</span>
+        <input type="text" class="blank-input" data-qi="${qi}" data-bi="${bi}" value="${(b||'').replace(/"/g,'&quot;')}" placeholder="Từ cần điền..."/>
+        <button class="del-opt-btn" onclick="delBlank(${qi},${bi})"><i class="ti ti-x"></i></button>
+      </div>`).join('')}
+    <button class="outline-btn" style="margin-top:4px;" onclick="addBlank(${qi})"><i class="ti ti-plus"></i> Thêm ô trống</button>`;
+}
+
+// ── MATCH ──
+function renderMatchEditor(q,qi){
+  const pairs=q.pairs||[{left:'',right:''}];
+  return `
+    <div class="lbl">Các cặp ghép (Trái ↔ Phải)</div>
+    ${pairs.map((p,pi)=>`
+      <div class="pair-row">
+        <input type="text" class="pair-left"  data-qi="${qi}" data-pi="${pi}" value="${(p.left||'').replace(/"/g,'&quot;')}" placeholder="Vế trái ${pi+1}"/>
+        <span class="pair-sep">↔</span>
+        <input type="text" class="pair-right" data-qi="${qi}" data-pi="${pi}" value="${(p.right||'').replace(/"/g,'&quot;')}" placeholder="Vế phải ${pi+1}"/>
+        <button class="del-opt-btn" onclick="delPair(${qi},${pi})"><i class="ti ti-x"></i></button>
+      </div>`).join('')}
+    <button class="outline-btn" style="margin-top:4px;" onclick="addPair(${qi})"><i class="ti ti-plus"></i> Thêm cặp</button>`;
+}
+
+// ── ORDER ──
+function renderOrderEditor(q,qi){
+  const words=q.words||[];
+  return `
+    <p class="words-hint">Nhập từng từ rồi nhấn <b>Enter</b> để thêm. Thứ tự hiện tại = đáp án đúng.</p>
+    <div class="lbl">Các từ (theo thứ tự đúng)</div>
+    <div style="min-height:36px;margin-bottom:8px;display:flex;flex-wrap:wrap;align-items:center;gap:4px;">
+      ${words.map((w,wi)=>`
+        <span class="word-tag">${w}
+          <button class="del-word" onclick="delWord(${qi},${wi})">✕</button>
+        </span>`).join('')}
+    </div>
+    <div style="display:flex;gap:7px;align-items:center;">
+      <input type="text" class="order-word-input" data-qi="${qi}" placeholder="Nhập từ rồi nhấn Enter..." style="margin-bottom:0;flex:1;"/>
+      <button class="outline-btn" onclick="addWordBtn(${qi})"><i class="ti ti-plus"></i></button>
+    </div>`;
+}
+
+// ===== ACTIONS =====
+window.addQ=function(type){
+  syncFromDOM();
+  const defaults={
+    mc:   {type:'mc',  text:'',opts:['',''],correct:0,corrects:[0],multi:false},
+    fill: {type:'fill',text:'',blanks:['']},
+    match:{type:'match',text:'',pairs:[{left:'',right:''}]},
+    order:{type:'order',text:'',words:[]}
+  };
+  curBaiQs.push(JSON.parse(JSON.stringify(defaults[type])));
+  renderEditor();
+  // scroll xuống cuối
+  setTimeout(()=>{
+    const blocks=document.querySelectorAll('.q-editor-block');
+    if(blocks.length) blocks[blocks.length-1].scrollIntoView({behavior:'smooth',block:'nearest'});
+  },50);
+};
+
+window.delQ=function(qi){syncFromDOM();curBaiQs.splice(qi,1);renderEditor();};
+
+// MC
+window.addOpt=function(qi){syncFromDOM();curBaiQs[qi].opts.push('');renderEditor();};
+window.delOpt=function(qi,oi){
+  syncFromDOM();
+  if(curBaiQs[qi].opts.length<=2)return;
+  curBaiQs[qi].opts.splice(oi,1);
+  renderEditor();
+};
+window.toggleMulti=function(qi,val){syncFromDOM();curBaiQs[qi].multi=val;renderEditor();};
+window.setCorrect=function(qi,oi){
+  syncFromDOM();
+  const q=curBaiQs[qi];
+  if(q.multi){
+    q.corrects=q.corrects||[];
+    const idx=q.corrects.indexOf(oi);
+    if(idx>=0) q.corrects.splice(idx,1); else q.corrects.push(oi);
+  } else { q.correct=oi; }
+  renderEditor();
+};
+
+// FILL
+window.addBlank=function(qi){syncFromDOM();curBaiQs[qi].blanks.push('');renderEditor();};
+window.delBlank=function(qi,bi){
+  syncFromDOM();
+  if(curBaiQs[qi].blanks.length<=1)return;
+  curBaiQs[qi].blanks.splice(bi,1);
+  renderEditor();
+};
+
+// MATCH
+window.addPair=function(qi){syncFromDOM();curBaiQs[qi].pairs.push({left:'',right:''});renderEditor();};
+window.delPair=function(qi,pi){
+  syncFromDOM();
+  if(curBaiQs[qi].pairs.length<=1)return;
+  curBaiQs[qi].pairs.splice(pi,1);
+  renderEditor();
+};
+
+// ORDER
+window.addWordBtn=function(qi){
+  const inp=document.querySelector(`.order-word-input[data-qi="${qi}"]`);
+  if(!inp) return;
+  const w=inp.value.trim(); if(!w) return;
+  syncFromDOM();
+  curBaiQs[qi].words.push(w);
+  renderEditor();
+  // refocus
+  setTimeout(()=>{
+    const ni=document.querySelector(`.order-word-input[data-qi="${qi}"]`);
+    if(ni) ni.focus();
+  },30);
+};
+window.addWordToOrder=function(qi,w){
+  if(!w) return;
+  syncFromDOM();
+  curBaiQs[qi].words.push(w);
+  renderEditor();
+  setTimeout(()=>{
+    const ni=document.querySelector(`.order-word-input[data-qi="${qi}"]`);
+    if(ni) ni.focus();
+  },30);
+};
+window.delWord=function(qi,wi){
+  syncFromDOM();
+  curBaiQs[qi].words.splice(wi,1);
+  renderEditor();
+};
+
+// ===== LƯU =====
+window.saveBai=async function(){
+  syncFromDOM();
+  await updateDoc(doc(db,'monhoc',curMonId,'bai',curBaiId),{qs:curBaiQs});
+  showToast('Đã lưu lên Firebase!');
+  goTo('s-bai');
+};
+</script>
+</body>
+</html>
