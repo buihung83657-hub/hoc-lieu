@@ -1,13 +1,5 @@
 // chain.js — Khi người dùng cuộn gần tới cuối trang, tự động tải nội dung
 // trang kế tiếp (theo đúng thứ tự menu) và nối liền vào cuối trang hiện tại,
-// tạo cảm giác một trang cuộn dài liên tục dù nội dung nằm ở nhiều file khác nhau.
-//
-// LƯU Ý: fetch() chỉ hoạt động khi web được host qua http/https (GitHub Pages,
-// Netlify, hoặc chạy qua 1 local server). Nếu mở file bằng cách double-click
-// (giao thức file://) trình duyệt sẽ chặn fetch giữa các file vì lý do bảo mật —
-// khi đó menu và từng trang riêng lẻ vẫn hoạt động bình thường, chỉ riêng phần
-// tự nối trang sẽ không chạy.
-
 (function () {
     // Thứ tự các trang sẽ được nối tiếp nhau, đúng theo thứ tự menu
     var ORDER = [
