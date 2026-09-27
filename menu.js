@@ -1,4 +1,4 @@
-// Xử lý mở/đóng menu điều hướng trên điện thoại (màn hình hẹp)
+// Xử lý điều hướng theo thiết bị
 const navToggle = document.getElementById("navToggle");
 const navMenu = document.getElementById("navMenu");
 
